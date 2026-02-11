@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  flask-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 01-optimized-flask-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - API_KEY=dev-secret-key-change-in-production
+      - LOG_LEVEL=DEBUG
+      - LOG_FORMAT=text
+    volumes:
+      # Mount app directory for live reload during development
+      - ./app:/app/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - flask-network
+
+networks:
+  flask-network:
+    driver: bridge

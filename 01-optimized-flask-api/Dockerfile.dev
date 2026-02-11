@@ -1,0 +1,36 @@
+# Development Dockerfile with hot reload
+FROM python:3.11-alpine
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    ENVIRONMENT=development
+
+# Install dependencies including dev tools
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    linux-headers \
+    curl
+
+# Create app user
+RUN addgroup -g 1000 appuser && \
+    adduser -D -u 1000 -G appuser appuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt requirements-dev.txt ./
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# Copy application code
+COPY --chown=appuser:appuser app/ ./app/
+
+USER appuser
+
+EXPOSE 5000
+
+# Use Flask development server with auto-reload
+CMD ["python", "-m", "flask", "--app", "app.api", "run", "--host", "0.0.0.0", "--port", "5000", "--reload"]

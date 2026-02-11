@@ -1,0 +1,128 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Elasticsearch data
+es-data/
+
+# Sensitive files
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+*.env
+.env.local
+.env.*.local
+
+# API Keys and Secrets
+*api_key*
+*secret*
+*password*
+credentials.json
+secrets.yaml
+
+# Cortex job data
+cortex-jobs/
+/tmp/cortex-jobs/
+
+# Cassandra data
+cassandra-data/
+
+# TheHive data
+thehive-data/
+
+# MISP data
+misp-mysql-data/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test outputs
+test-results/
+coverage/
+.coverage
+htmlcov/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Scanner results
+scanner_results.json
+
+# Agent logs
+agent.log
+agent_*.log
+
+# Custom
+# Add your custom ignores here
+#Just ignore
+*.bat
