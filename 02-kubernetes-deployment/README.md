@@ -3,18 +3,18 @@
 Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storage, and service mesh.
 
 **Part of:** [DevOps Learning Journey](../README.md)  
-**Status:** ⏳ Coming Soon (Week 4-6)  
+**Status:** ✅ Completed (Week 4-6)  
 **Prerequisites:** Completion of [01-optimized-flask-api](../01-optimized-flask-api)
 
 ---
 
 ## 🎯 Learning Objectives
 
-- [ ] Understand Kubernetes architecture (pods, nodes, clusters)
-- [ ] Master kubectl commands and YAML manifests
-- [ ] Deploy multi-container applications
-- [ ] Configure ConfigMaps and Secrets
-- [ ] Implement Horizontal Pod Autoscaling (HPA)
+- [x] Understand Kubernetes architecture (pods, nodes, clusters)
+- [x] Master kubectl commands and YAML manifests
+- [x] Deploy multi-container applications
+- [x] Configure ConfigMaps and Secrets
+- [x] Implement Horizontal Pod Autoscaling (HPA)
 - [ ] Set up Ingress controllers (NGINX)
 - [ ] Manage persistent volumes (PV/PVC)
 - [ ] Create and publish Helm charts
@@ -22,9 +22,44 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
 
 ---
 
-## 🏗️ What We'll Build
+## ✅ What We Accomplished
 
-### Architecture
+### 🐳 Docker
+- Built and optimized the Flask API Docker image
+- Tagged and pushed image to Docker Hub: `dansokomaha/optimized-flask-api:latest`
+
+### ☸️ Kubernetes Deployment (Minikube)
+- Set up a local Kubernetes cluster with **Minikube v1.35.1**
+- Created a dedicated **namespace** `flask-app`
+- Deployed **3 replicas** of the Flask API with zero-downtime rolling updates
+- Configured **ConfigMap** for app environment variables
+- Configured **Secrets** for sensitive data (API keys, DB credentials)
+- Set up **ClusterIP Service** to expose the Flask API internally
+- Configured **Horizontal Pod Autoscaler (HPA)**:
+  - Scale up when CPU > 70%
+  - Scale up when Memory > 80%
+  - Max 10 pods / Min 2 pods
+
+### 🏥 Health Checks Verified
+- `/health` → `status: healthy`, `environment: production`, `version: 1.0.0`
+- `/ready` → `ready: true`, `api: ok`
+
+### 📁 Files Structure
+```
+02-kubernetes-deployment/
+├── README.md
+└── base/
+    ├── namespace.yaml       # flask-app namespace
+    ├── configmap.yaml       # App configuration
+    ├── secret.yaml          # Sensitive credentials
+    ├── flask-deployment.yaml # 3 replicas, rolling update
+    ├── flask-service.yaml   # ClusterIP Service
+    └── hpa.yaml             # Autoscaling config
+```
+
+---
+
+## 🏗️ Architecture
 ```
                      Internet
                         │
@@ -41,128 +76,53 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
    │  Flask  │    │  Flask  │    │  Flask  │
    │   Pod   │    │   Pod   │    │   Pod   │
    │ (App 1) │    │ (App 2) │    │ (App 3) │
-   └────┬────┘    └────┬────┘    └────┬────┘
-        │               │               │
-        └───────────────┼───────────────┘
-                        │
-                        ▼
-                  ┌──────────┐
-                  │PostgreSQL│
-                  │   Pod    │
-                  │   (PVC)  │
-                  └──────────┘
-```
-
-### Components
-
-1. **Deployment Manifests**
-   - Flask API deployment (3 replicas)
-   - PostgreSQL StatefulSet
-   - Redis deployment
-
-2. **Services**
-   - ClusterIP for internal communication
-   - LoadBalancer for external access
-
-3. **ConfigMaps & Secrets**
-   - Application configuration
-   - Database credentials
-   - API keys
-
-4. **Ingress**
-   - NGINX Ingress Controller
-   - TLS/SSL termination
-   - Path-based routing
-
-5. **Autoscaling**
-   - Horizontal Pod Autoscaler (HPA)
-   - CPU/Memory-based scaling
-   - Custom metrics (optional)
-
-6. **Persistent Storage**
-   - PersistentVolume for PostgreSQL
-   - PersistentVolumeClaim
-   - Storage classes
-
-7. **Helm Chart**
-   - Templated manifests
-   - values.yaml for environments
-   - Chart dependencies
-
----
-
-## 📋 Project Structure (Preview)
-```
-02-kubernetes-deployment/
-├── README.md
-├── k8s/
-│   ├── namespace.yaml
-│   ├── configmap.yaml
-│   ├── secrets.yaml
-│   ├── flask-deployment.yaml
-│   ├── flask-service.yaml
-│   ├── postgres-statefulset.yaml
-│   ├── postgres-pvc.yaml
-│   ├── redis-deployment.yaml
-│   ├── ingress.yaml
-│   └── hpa.yaml
-├── helm/
-│   └── flask-microservices/
-│       ├── Chart.yaml
-│       ├── values.yaml
-│       ├── values-dev.yaml
-│       ├── values-prod.yaml
-│       └── templates/
-│           ├── deployment.yaml
-│           ├── service.yaml
-│           ├── ingress.yaml
-│           └── hpa.yaml
-├── scripts/
-│   ├── deploy.sh
-│   ├── scale.sh
-│   └── cleanup.sh
-└── docs/
-    └── kubernetes-concepts.md
+   └─────────┘    └─────────┘    └─────────┘
 ```
 
 ---
 
-## 🛠️ Technologies
-
-- **Kubernetes:** v1.28+
-- **kubectl:** Latest
-- **Helm:** v3.12+
-- **Local Cluster:** Minikube / k3s / Kind
-- **Ingress:** NGINX Ingress Controller
-- **Storage:** Local or cloud-based PV
-
----
-
-## 🚀 Quick Start (Coming Soon)
+## 🚀 Quick Start
 ```bash
-# Install minikube
-# TBD
+# Start Minikube
+minikube start
 
-# Deploy application
-kubectl apply -f k8s/
-
-# Or using Helm
-helm install flask-app helm/flask-microservices
+# Deploy everything
+kubectl create namespace flask-app
+kubectl apply -f base/configmap.yaml
+kubectl apply -f base/secret.yaml
+kubectl apply -f base/flask-deployment.yaml
+kubectl apply -f base/flask-service.yaml
+kubectl apply -f base/hpa.yaml
 
 # Access the application
-kubectl port-forward svc/flask-api 5000:5000
+minikube service flask-service -n flask-app
+
+# Check pods
+kubectl get pods -n flask-app
 ```
 
 ---
 
 ## 📈 Success Metrics
 
-- [ ] Application runs with 3 replicas
-- [ ] Auto-scaling triggers on CPU > 70%
-- [ ] Zero-downtime rolling updates
+- [x] Application runs with 3 replicas
+- [x] Auto-scaling configured (CPU > 70%, Memory > 80%)
+- [x] Zero-downtime rolling updates configured
+- [x] Health checks passing (`/health`, `/ready`)
+- [x] Image published to Docker Hub
 - [ ] Persistent data survives pod restarts
 - [ ] Ingress accessible from browser
 - [ ] Helm chart published to repository
+
+---
+
+## 🛠️ Technologies Used
+
+- **Kubernetes:** v1.35.1
+- **Minikube:** v1.35.1
+- **kubectl:** Latest
+- **Docker Hub:** `dansokomaha/optimized-flask-api:latest`
+- **Flask API:** Python, Gunicorn
 
 ---
 
