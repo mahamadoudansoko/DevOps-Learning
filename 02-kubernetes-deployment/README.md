@@ -44,6 +44,31 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
 - `/health` → `status: healthy`, `environment: production`, `version: 1.0.0`
 - `/ready` → `ready: true`, `api: ok`
 
+
+
+## 📸 Screenshots
+
+### Container Created
+![Container Create ](screenshots/01-container-creation.png)
+
+### Status of Pods
+![Pods Status](screenshots/02-pods-running.png)
+
+### Image Successfully Pushed
+![Push Image](screenshots/03-pushing-image.png)
+
+### Checked Route Health
+![Route Health](screenshots/04-route-health.png)
+
+### Route Ready
+![Route Ready](screenshots/05-route-ready.png)
+
+### Route Status
+![Route Ready](screenshots/06-route-status.png)
+
+
+
+
 ### 📁 Files Structure
 ```
 02-kubernetes-deployment/
