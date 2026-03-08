@@ -63,8 +63,32 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
 ### Route Ready
 ![Route Ready](screenshots/05-route-ready.png)
 
-### Route Status
-![Route Ready](screenshots/06-route-status.png)
+
+### Enable Ingress
+![Enable Ingress](screenshots/07-enable-ingress-nginx.png)
+### Add App to Windows Hosts
+![Add App](screenshots/08-add-app-windows-hosts.png)
+
+### Flask API Health Checking
+![Flask API Health](screenshots/09-flask-api-health.png)
+
+### Flask API Ready
+![API Ready](screenshots/10-flask-api-ready.png)
+
+### PostgreSQL Adding
+![PostgreSQL](screenshots/11-postgresSQL.png)
+
+### Configuring Helm Chart
+![Helm Chart](screenshots/12-helm-configuration.png)
+
+### Deploying Helm Chart 
+![Helm Deployment](screenshots/13-helm-deployment.png)
+
+### Checking Helm Health
+![Helm Health](screenshots/14-helm-flask-api-health.png)
+
+### Checking Health is Ready
+![Helm Ready](screenshots/15-help-flask-api-ready.png)
 
 
 

@@ -1,0 +1,26 @@
+# Development environment overrides
+namespace: flask-app
+
+flask:
+  replicaCount: 1
+
+  image:
+    repository: dansokomaha/optimized-flask-api
+    tag: latest
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 90
+
+postgres:
+  storage: 512Mi

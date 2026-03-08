@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-flask
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Release.Name }}-flask
+spec:
+  replicas: {{ .Values.flask.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-flask
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-flask
+    spec:
+      containers:
+      - name: flask
+        image: {{ .Values.flask.image.repository }}:{{ .Values.flask.image.tag }}
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: flask-config
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: flask-secret
+              key: API_KEY
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: flask-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: flask-secret
+              key: DB_PASSWORD
+        resources:
+          requests:
+            cpu: {{ .Values.flask.resources.requests.cpu }}
+            memory: {{ .Values.flask.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.flask.resources.limits.cpu }}
+            memory: {{ .Values.flask.resources.limits.memory }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
