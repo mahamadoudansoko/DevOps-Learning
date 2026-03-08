@@ -15,10 +15,10 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
 - [x] Deploy multi-container applications
 - [x] Configure ConfigMaps and Secrets
 - [x] Implement Horizontal Pod Autoscaling (HPA)
-- [ ] Set up Ingress controllers (NGINX)
-- [ ] Manage persistent volumes (PV/PVC)
-- [ ] Create and publish Helm charts
-- [ ] Implement service mesh basics (optional)
+- [x] Set up Ingress controllers (NGINX)
+- [x] Manage persistent volumes (PV/PVC)
+- [x] Create and publish Helm charts
+- [x] Implement service mesh basics (optional)
 
 ---
 
@@ -97,35 +97,95 @@ Deploy the Flask API to Kubernetes with auto-scaling, ingress, persistent storag
 ```
 02-kubernetes-deployment/
 ├── README.md
-└── base/
-    ├── namespace.yaml       # flask-app namespace
-    ├── configmap.yaml       # App configuration
-    ├── secret.yaml          # Sensitive credentials
-    ├── flask-deployment.yaml # 3 replicas, rolling update
-    ├── flask-service.yaml   # ClusterIP Service
-    └── hpa.yaml             # Autoscaling config
+├── k8s/
+│   ├── base/
+│   │   ├── namespace.yaml            # flask-app namespace
+│   │   ├── configmap.yaml            # App configuration
+│   │   ├── secret.yaml               # Sensitive credentials
+│   │   ├── flask-deployment.yaml     # 3 replicas, rolling update
+│   │   ├── flask-service.yaml        # ClusterIP Service
+│   │   ├── hpa.yaml                  # Autoscaling config
+│   │   ├── ingress.yaml              # NGINX Ingress controller
+│   │   ├── postgres-statefulset.yaml # PostgreSQL StatefulSet
+│   │   ├── postgres-pvc.yaml         # Persistent Volume Claim 1Gi
+│   │   └── postgres-service.yaml     # PostgreSQL headless service
+│   └── overlays/
+│       ├── dev/
+│       │   └── kustomization.yaml    # Dev overrides (1 replica, low resources)
+│       └── prod/
+│           └── kustomization.yaml    # Prod overrides (5 replicas, high resources)
+├── helm/
+│   └── flask-app/
+│       ├── Chart.yaml                # Helm chart metadata
+│       ├── values.yaml               # Default values
+│       ├── values-dev.yaml           # Dev environment values
+│       ├── values-prod.yaml          # Prod environment values
+│       └── templates/
+│           ├── deployment.yaml       # Flask deployment template
+│           ├── service.yaml          # Flask service template
+│           ├── ingress.yaml          # Ingress template
+│           ├── hpa.yaml              # HPA template
+│           └── postgres.yaml         # PostgreSQL StatefulSet + PVC + Service
+├── scripts/
+│   ├── deploy.sh                     # Deploy script
+│   └── cleanup.sh                    # Cleanup script
+└── docs/
+    └── kubernetes-architecture.md    # Architecture documentation
 ```
 
 ---
 
 ## 🏗️ Architecture
 ```
-                     Internet
-                        │
-                        ▼
-                   ┌─────────┐
-                   │ Ingress │
-                   │ (NGINX) │
-                   └────┬────┘
-                        │
-        ┌───────────────┼───────────────┐
-        │               │               │
-        ▼               ▼               ▼
-   ┌─────────┐    ┌─────────┐    ┌─────────┐
-   │  Flask  │    │  Flask  │    │  Flask  │
-   │   Pod   │    │   Pod   │    │   Pod   │
-   │ (App 1) │    │ (App 2) │    │ (App 3) │
-   └─────────┘    └─────────┘    └─────────┘
+                        Internet
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │    Ingress    │
+                    │  (NGINX)      │
+                    │flask-api.local│
+                    └──────┬────────┘
+                           │
+           ┌───────────────┼───────────────┐
+           │               │               │
+           ▼               ▼               ▼
+      ┌─────────┐    ┌─────────┐    ┌─────────┐
+      │  Flask  │    │  Flask  │    │  Flask  │
+      │   Pod   │    │   Pod   │    │   Pod   │
+      │ (App 1) │    │ (App 2) │    │ (App 3) │
+      └────┬────┘    └────┬────┘    └────┬────┘
+           │               │               │
+           └───────────────┼───────────────┘
+                           │
+                    ┌──────▼────────┐
+                    │  flask-service│
+                    │  (ClusterIP)  │
+                    │   port: 80    │
+                    └──────┬────────┘
+                           │
+                    ┌──────▼────────┐
+                    │  PostgreSQL   │
+                    │  StatefulSet  │
+                    │  (postgres-0) │
+                    └──────┬────────┘
+                           │
+                    ┌──────▼────────┐
+                    │     PVC       │
+                    │  1Gi Storage  │
+                    │  (Persistent) │
+                    └───────────────┘
+
+┌─────────────────────────────────────────┐
+│           HPA (Autoscaler)              │
+│  Min: 2 pods  │  Max: 10 pods          │
+│  CPU > 70%    │  Memory > 80%          │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│           Helm Chart                    │
+│  flask-app │ dev/prod values            │
+│  templates │ deployment, svc, ingress   │
+└─────────────────────────────────────────┘
 ```
 
 ---
@@ -159,9 +219,9 @@ kubectl get pods -n flask-app
 - [x] Zero-downtime rolling updates configured
 - [x] Health checks passing (`/health`, `/ready`)
 - [x] Image published to Docker Hub
-- [ ] Persistent data survives pod restarts
-- [ ] Ingress accessible from browser
-- [ ] Helm chart published to repository
+- [x] Persistent data survives pod restarts
+- [x] Ingress accessible from browser
+- [x] Helm chart published to repository
 
 ---
 
@@ -172,6 +232,7 @@ kubectl get pods -n flask-app
 - **kubectl:** Latest
 - **Docker Hub:** `dansokomaha/optimized-flask-api:latest`
 - **Flask API:** Python, Gunicorn
+- **Deployment:** Helm, PostgreSQL, NGINX Ingress
 
 ---
 

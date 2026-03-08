@@ -13,7 +13,7 @@ A comprehensive, hands-on learning path for mastering DevOps and DevSecOps pract
 | Phase | Duration | Status | Projects |
 |-------|----------|--------|----------|
 | **Phase 1: Docker & Containers** | 3 weeks | ✅ Complete | [01-optimized-flask-api](#01-optimized-flask-api) |
-| **Phase 2: Kubernetes** | 3 weeks | 🔄 In Progress | [02-kubernetes-deployment](#02-kubernetes-deployment) |
+| **Phase 2: Kubernetes** | 3 weeks | ✅ Complete | [02-kubernetes-deployment](#02-kubernetes-deployment) |
 | **Phase 3: Infrastructure as Code** | 3 weeks | ⏳ Planned | [03-terraform-aws-infrastructure](#03-terraform-aws-infrastructure) |
 | **Phase 4: CI/CD Pipelines** | 2 weeks | ⏳ Planned | [04-jenkins-cicd-pipeline](#04-jenkins-cicd-pipeline) |
 | **Phase 5: Monitoring & Observability** | 1 week | ⏳ Planned | [05-monitoring-prometheus-grafana](#05-monitoring-prometheus-grafana) |
@@ -47,8 +47,8 @@ A comprehensive, hands-on learning path for mastering DevOps and DevSecOps pract
 ---
 
 ### 02-kubernetes-deployment
-**Status:** ⏳ Coming Soon  
-**Technologies:** Kubernetes, kubectl, Helm, Minikube/k3s  
+**Status:** ✅ Complete  
+**Technologies:** Kubernetes, kubectl, Helm, Minikube  
 **Description:** Deploy microservices to Kubernetes with auto-scaling, ingress, and persistent storage.
 
 [📂 View Project →](./02-kubernetes-deployment)
@@ -125,7 +125,7 @@ A comprehensive, hands-on learning path for mastering DevOps and DevSecOps pract
 ## 📈 Learning Progress
 ```
 Week 1-3:   Docker Mastery ████████████████████ 100%
-Week 4-6:   Kubernetes      ░░░░░░░░░░░░░░░░░░░░   0%
+Week 4-6:   Kubernetes     ████████████████████ 100%
 Week 7-9:   IaC (Terraform) ░░░░░░░░░░░░░░░░░░░░   0%
 Week 10-11: DevSecOps       ░░░░░░░░░░░░░░░░░░░░   0%
 Week 12:    Monitoring      ░░░░░░░░░░░░░░░░░░░░   0%
@@ -146,7 +146,7 @@ Week 12:    Monitoring      ░░░░░░░░░░░░░░░░░�
 - [x] Security scanning (Trivy)
 
 ### In Progress 🔄
-- [ ] Kubernetes deployment
+- [x] Kubernetes deployment
 - [ ] Helm charts
 - [ ] Horizontal Pod Autoscaling
 
