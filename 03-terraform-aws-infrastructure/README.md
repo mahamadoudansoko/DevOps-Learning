@@ -1,10 +1,23 @@
-# ☁️ Terraform AWS Infrastructure - Infrastructure as Code
+# ☁️ Terraform AWS Infrastructure (LocalStack) - Infrastructure as Code
 
-Provision complete AWS infrastructure using Terraform: VPC, subnets, security groups, EC2, EKS, RDS, and more.
+Provision complete AWS infrastructure using Terraform locally with LocalStack: VPC, subnets, security groups, EC2, RDS, and more — no AWS account or credit card required.
 
-**Part of:** [DevOps Learning Journey](../README.md)  
-**Status:** ⏳ Coming Soon (Week 7-9)  
+**Part of:** [DevOps Learning Journey](../README.md)
+**Status:** 🚧 In Progress (Week 7-9)
 **Prerequisites:** [01-optimized-flask-api](../01-optimized-flask-api), [02-kubernetes-deployment](../02-kubernetes-deployment)
+
+---
+
+## ⚠️ LocalStack Notice
+
+This project uses **LocalStack** to simulate AWS services locally. This means:
+- ✅ No AWS account needed
+- ✅ No credit card required
+- ✅ Completely free
+- ⚠️ EKS simulation is limited — worker node behavior differs from real AWS
+- ⚠️ Some advanced features (KMS, Multi-AZ RDS) may behave differently
+
+When you're ready for a real AWS deployment, the Terraform code here is fully transferable — just swap the provider config.
 
 ---
 
@@ -16,7 +29,7 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 - [ ] Deploy EC2 instances with security groups
 - [ ] Create RDS PostgreSQL database
 - [ ] Provision EKS (Elastic Kubernetes Service) cluster
-- [ ] Manage Terraform state remotely (S3 + DynamoDB)
+- [ ] Manage Terraform state locally (local backend) and understand remote state (S3 + DynamoDB)
 - [ ] Create reusable Terraform modules
 - [ ] Implement workspaces (dev/staging/prod)
 - [ ] Generate infrastructure diagrams
@@ -28,7 +41,7 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 ### Architecture
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        AWS Cloud                             │
+│                   LocalStack (local AWS sim)                 │
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │              VPC (10.0.0.0/16)                         │ │
@@ -39,12 +52,12 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 │  │  │                      │  │                      │  │ │
 │  │  │  ┌────────────┐      │  │  ┌────────────┐     │  │ │
 │  │  │  │   Bastion  │      │  │  │    EKS     │     │  │ │
-│  │  │  │    Host    │      │  │  │   Nodes    │     │  │ │
+│  │  │  │    Host    │      │  │  │  (simulated)│     │  │ │
 │  │  │  └────────────┘      │  │  └────────────┘     │  │ │
 │  │  │                      │  │                      │  │ │
 │  │  │  ┌────────────┐      │  │  ┌────────────┐     │  │ │
 │  │  │  │    ALB     │      │  │  │    RDS     │     │  │ │
-│  │  │  │(Load Bal.) │      │  │  │ PostgreSQL │     │  │ │
+│  │  │  │(simulated) │      │  │  │ PostgreSQL │     │  │ │
 │  │  │  └────────────┘      │  │  └────────────┘     │  │ │
 │  │  └──────────────────────┘  └──────────────────────┘  │ │
 │  │           │                          │                │ │
@@ -56,10 +69,10 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 │  └────────────────────────────────────────────────────────┘ │
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │              Terraform State Backend                   │ │
+│  │              Terraform State (local backend)           │ │
 │  │  ┌──────────────┐      ┌──────────────┐               │ │
-│  │  │  S3 Bucket   │      │  DynamoDB    │               │ │
-│  │  │(State files) │      │(State lock)  │               │ │
+│  │  │ terraform    │      │  S3 bucket   │               │ │
+│  │  │ .tfstate     │      │ (LocalStack) │               │ │
 │  │  └──────────────┘      └──────────────┘               │ │
 │  └────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
@@ -76,13 +89,12 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 
 2. **Compute**
    - EC2 bastion host (jump server)
-   - EKS cluster with worker nodes
+   - EKS cluster with worker nodes (simulated)
    - Auto Scaling Groups
 
 3. **Database**
    - RDS PostgreSQL instance
-   - Multi-AZ deployment (optional)
-   - Automated backups
+   - Automated backups (simulated)
 
 4. **Load Balancing**
    - Application Load Balancer (ALB)
@@ -92,19 +104,18 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 5. **Security**
    - Security groups (least privilege)
    - IAM roles and policies
-   - KMS encryption keys
 
 6. **Storage**
    - S3 buckets (app data, Terraform state)
    - EBS volumes
 
 7. **Monitoring**
-   - CloudWatch alarms
-   - SNS notifications
+   - CloudWatch alarms (simulated)
+   - SNS notifications (simulated)
 
 ---
 
-## 📋 Project Structure (Preview)
+## 📋 Project Structure
 ```
 03-terraform-aws-infrastructure/
 ├── README.md
@@ -113,7 +124,7 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 ├── outputs.tf               # Output values
 ├── terraform.tfvars         # Variable values (gitignored)
 ├── versions.tf              # Provider versions
-├── backend.tf               # Remote state config
+├── backend.tf               # Local state config (swap for S3 on real AWS)
 ├── modules/
 │   ├── vpc/
 │   │   ├── main.tf
@@ -148,7 +159,7 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 │   └── destroy.sh
 └── docs/
     ├── architecture-diagram.png
-    └── cost-estimation.md
+    └── localstack-limitations.md
 ```
 
 ---
@@ -156,58 +167,131 @@ Provision complete AWS infrastructure using Terraform: VPC, subnets, security gr
 ## 🛠️ Technologies
 
 - **Terraform:** v1.6+
-- **AWS CLI:** v2.x
-- **Cloud Provider:** AWS
-- **State Backend:** S3 + DynamoDB
+- **LocalStack:** v3.x (free tier)
+- **awslocal CLI:** Latest (wrapper around AWS CLI for LocalStack)
+- **Docker:** Required to run LocalStack
 - **Visualization:** Terraform Graph, Graphviz
 
 ---
 
-## 🚀 Quick Start (Coming Soon)
-```bash
-# Configure AWS credentials
-aws configure
+## 🚀 Quick Start
 
+### 1. Install dependencies
+
+```bash
+# Install LocalStack (requires Docker running)
+pip install localstack
+
+# Install the LocalStack AWS CLI wrapper
+pip install awscli-local
+
+# Install Terraform
+# https://developer.hashicorp.com/terraform/install
+```
+
+### 2. Start LocalStack
+
+```bash
+# Start LocalStack in the background
+localstack start -d
+
+# Verify it's running
+localstack status services
+```
+
+### 3. Configure the Terraform provider for LocalStack
+
+In `versions.tf` or `main.tf`, use this provider block instead of real AWS credentials:
+
+```hcl
+provider "aws" {
+  access_key                  = "test"
+  secret_key                  = "test"
+  region                      = "us-east-1"
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    ec2      = "http://localhost:4566"
+    s3       = "http://localhost:4566"
+    rds      = "http://localhost:4566"
+    eks      = "http://localhost:4566"
+    iam      = "http://localhost:4566"
+    dynamodb = "http://localhost:4566"
+    elb      = "http://localhost:4566"
+    elbv2    = "http://localhost:4566"
+    cloudwatch = "http://localhost:4566"
+    sns      = "http://localhost:4566"
+  }
+}
+```
+
+### 4. Deploy
+
+```bash
 # Initialize Terraform
 terraform init
 
-# Plan infrastructure
+# Preview infrastructure
 terraform plan
 
-# Apply changes
+# Apply
 terraform apply
 
-# Generate graph
-terraform graph | dot -Tpng > graph.png
+# Generate graph (requires Graphviz)
+terraform graph | dot -Tpng > docs/architecture-diagram.png
 
-# Destroy (when done)
+# Tear down
 terraform destroy
+```
+
+### 5. Inspect resources with awslocal
+
+```bash
+# List S3 buckets
+awslocal s3 ls
+
+# List VPCs
+awslocal ec2 describe-vpcs
+
+# List RDS instances
+awslocal rds describe-db-instances
 ```
 
 ---
 
-## 💰 Cost Estimation
+## 💰 Cost
 
-| Resource | Monthly Cost (Estimated) |
-|----------|--------------------------|
-| VPC & Networking | $30-50 |
-| EKS Cluster | $72 |
-| EC2 (t3.medium x 3) | $90 |
-| RDS (db.t3.micro) | $15 |
-| NAT Gateway | $32 |
-| **Total** | **~$240/month** |
+**$0.00** — LocalStack runs entirely on your machine inside Docker.
 
-**Note:** Use `terraform destroy` after learning to avoid charges!
+---
+
+## ⚡ LocalStack Service Support
+
+| Service | Support Level |
+|---------|--------------|
+| VPC / Subnets / Route Tables | ✅ Full |
+| EC2 | ✅ Full |
+| S3 | ✅ Full |
+| IAM | ✅ Full |
+| RDS PostgreSQL | ✅ Good |
+| ALB / ELB | ✅ Good |
+| DynamoDB | ✅ Full |
+| CloudWatch | ⚠️ Partial |
+| EKS | ⚠️ Limited |
+| KMS | ⚠️ Limited |
+| NAT Gateway | ⚠️ Simulated only |
 
 ---
 
 ## 📈 Success Metrics
 
+- [ ] LocalStack running and healthy
 - [ ] VPC created with proper CIDR blocks
-- [ ] EKS cluster accessible via kubectl
 - [ ] RDS instance reachable from private subnet
 - [ ] ALB distributing traffic to EC2 instances
-- [ ] Terraform state stored in S3 with locking
+- [ ] Terraform state stored in local backend
 - [ ] Infrastructure diagram generated
 - [ ] Multi-environment setup working (dev/staging/prod)
 
@@ -215,6 +299,7 @@ terraform destroy
 
 ## 📚 Resources
 
+- [LocalStack Documentation](https://docs.localstack.cloud/)
 - [Terraform AWS Provider Docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [Terraform Best Practices](https://www.terraform-best-practices.com/)
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
